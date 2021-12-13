@@ -8,6 +8,10 @@ import com.softuni.books.repository.AuthorRepository;
 import com.softuni.books.repository.BookRepository;
 import com.softuni.books.service.BookService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -81,6 +85,13 @@ public class BookServiceImpl implements BookService {
        bookEntity.setTitle(bookDTO.getTitle());
        bookEntity.setIsbn(bookDTO.getIsbn());
         return this.modelMapper.map(this.bookRepository.save(bookEntity),BookDTO.class);
+    }
+
+    @Override
+    public Page<BookDTO> geAllBooks(int pageNo, int pageSize, String sortBy) {
+        Pageable pageable= PageRequest.of(pageNo,pageSize, Sort.by(sortBy));
+       return this.bookRepository.findAll(pageable)
+               .map(this::asBook);
     }
 
 

@@ -2,6 +2,7 @@ package com.softuni.books.web;
 
 import com.softuni.books.model.dtos.BookDTO;
 import com.softuni.books.service.BookService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,6 +26,13 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    @GetMapping("/pageable")
+    public ResponseEntity<Page<BookDTO>> getAllBooks(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+                                                     @RequestParam(name = "pageSize", defaultValue = "3") int pageSize,
+                                                     @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+        return ResponseEntity.ok(this.bookService.geAllBooks(pageNo,pageSize,sortBy));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BookDTO> getBook(@PathVariable("id") String id) {
         Optional<BookDTO> book = this.bookService.getBookById(id);
@@ -45,7 +53,7 @@ public class BookController {
     public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO,
                                               UriComponentsBuilder uriComponentsBuilder) {
         BookDTO bookDto = this.bookService.createBook(bookDTO);
-        String bookId=bookDTO.getId();
+        String bookId = bookDTO.getId();
         URI location = uriComponentsBuilder.path("/books/{id}").buildAndExpand(bookId).toUri();
         return ResponseEntity.created(location).build();
     }
